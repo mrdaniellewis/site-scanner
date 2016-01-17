@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha"
   },
-  "author": "",
+  "author": "Daniel Lewis",
+  "repository": "https://github.com/mrdaniellewis/site-scanner.git",
   "license": "ISC",
   "dependencies": {
     "content-type": "^1.0.1",
