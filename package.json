@@ -1,6 +1,6 @@
 {
   "name": "site-scanner",
-  "version": "1.0.0",
+  "version": "0.2",
   "description": "Website crawler",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,7 @@
   "repository": "https://github.com/mrdaniellewis/site-scanner.git",
   "license": "ISC",
   "dependencies": {
+    "bunyan": "^1.5.1",
     "content-type": "^1.0.1",
     "debug": "^2.2.0",
     "htmlparser2": "^3.9.0",
@@ -17,10 +18,12 @@
     "mkdir": "0.0.2",
     "mkdirp": "^0.5.1",
     "promise-util": "^2.0.1",
-    "request": "^2.67.0"
+    "request": "^2.67.0",
+    "sqlite3": "^3.1.1"
   },
   "devDependencies": {
     "expect": "^1.13.4",
-    "mocha": "^2.3.4"
+    "mocha": "^2.3.4",
+    "proxyquire": "^1.7.3"
   }
 }

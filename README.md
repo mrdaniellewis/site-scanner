@@ -6,8 +6,10 @@ Very much a work in progress.
 
 ## Todo
 
-* Add events to the link parser
-* More reasonable logging
-* CLI
-* Date the save directories
-* Save data to a database
+* [ ] Tests
+* [ ] Get it working
+* [ ] Implement maxRedirects
+* [ ] Replace content-type with something that doesn't error
+* [ ] CSS parser
+
+
