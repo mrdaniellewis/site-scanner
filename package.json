@@ -1,6 +1,6 @@
 {
   "name": "site-scanner",
-  "version": "0.2",
+  "version": "0.2.0",
   "description": "Website crawler",
   "main": "index.js",
   "scripts": {
@@ -24,6 +24,8 @@
   "devDependencies": {
     "expect": "^1.13.4",
     "mocha": "^2.3.4",
-    "proxyquire": "^1.7.3"
+    "mock-http": "0.0.9",
+    "proxyquire": "^1.7.3",
+    "stream-collect": "^1.3.0"
   }
 }

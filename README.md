@@ -6,10 +6,13 @@ Very much a work in progress.
 
 ## Todo
 
-* [ ] Tests
-* [ ] Get it working
+* [ ] Write link-manager tests
+* [ ] Figure out how to do the parallel stream thing
+* [ ] Write more tests
+* [ ] Generic htmlparser handler
+* [ ] Add in CSS parser
 * [ ] Implement maxRedirects
 * [ ] Replace content-type with something that doesn't error
-* [ ] CSS parser
-
-
+* [ ] Do we need to create our own agent?
+* [ ] Elastic search extension
+* [ ] Look at using a generator in link-manager
