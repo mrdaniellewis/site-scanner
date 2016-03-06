@@ -54,7 +54,7 @@
 		"no-iterator": 2,
 		"no-lone-blocks": 2,
 		"no-loop-func": 2,
-		"no-multi-spaces": 2,
+		"no-multi-spaces": 1,
 		"no-multi-str": 2,
 		"no-native-reassign": 2,
 		"no-new-func": 2,
@@ -85,7 +85,7 @@
 		"no-undef-init": 2,
 		"no-undef": 2,
 		"no-unused-vars": 2,
-		"no-use-before-define": 2,
+		"no-use-before-define": [2, "nofunc"],
 
 		// Style
 		"array-bracket-spacing": [1, "never"], //[1, 2, 3]
@@ -138,6 +138,8 @@
 		"arrow-spacing": 2,
 		"arrow-parens": [2, "as-needed"],
 		"no-case-declarations": 2,
+		"require-yield": 2,
+		"generator-star-spacing": 1,
 
 		// Node only
 		"strict": [2, "global"],

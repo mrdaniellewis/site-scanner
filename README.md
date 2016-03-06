@@ -1,18 +1,48 @@
 # Site scanner
 
-Scans a website for links and issues.
+Crawls a website.  Base libraries for crawling and performing actions
+on the results.
 
 Very much a work in progress. 
 
 ## Todo
 
-* [ ] Write link-manager tests
-* [ ] Figure out how to do the parallel stream thing
-* [ ] Write more tests
-* [ ] Generic htmlparser handler
-* [ ] Add in CSS parser
-* [ ] Implement maxRedirects
-* [ ] Replace content-type with something that doesn't error
-* [ ] Do we need to create our own agent?
-* [ ] Elastic search extension
-* [ ] Look at using a generator in link-manager
+### Issues
+
+* error handling
+* normalise links in link-manager before using
+* merge queue into promise-util
+  * Make it easier to resolve a defer
+  * Should coroutine return a reusable function?
+* Do we need to create our own agent?
+
+### Features
+
+* support data uris
+* extra meta data
+* error handling
+* elastic search datastore
+* broken link requester
+* css inline styles
+* max-redirects
+* Add referer
+* Other types of links
+  * srcset
+  * picture
+  * alternative action on forms
+* replace content-type with something that doesn't error
+* Other http headers that can return a link
+* Meta tags that can contain links
+* Probably don't make actual requests during the tests
+
+Stuff to save
+* headers
+* body
+* size
+* timing
+* meta
+* references
+* url
+* time
+* css classes
+* broken links
