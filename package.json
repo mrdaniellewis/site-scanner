@@ -1,6 +1,6 @@
 {
   "name": "site-scanner",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Website crawler",
   "main": "index.js",
   "scripts": {
