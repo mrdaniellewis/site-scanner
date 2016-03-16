@@ -5,7 +5,6 @@ const urlUtils = require( 'url' );
 
 const expect = require( 'expect' );
 
-const Response = require( '../lib/response' );
 const Requester = require( '../lib/requester' );
 
 const mockIncoming = require( './util/mock-incoming' );
@@ -56,6 +55,28 @@ describe( 'Requester', function() {
                 .then( () => {
                     expect( request.calls.length ).toEqual( 1 );
                     expect( request ).toHaveBeenCalledWith( 'http://www.bbc.co.uk' );
+                } );
+
+        } );
+
+    } );
+
+    describe( 'events', function() {
+
+        it( 'it passes on link events', function() {
+
+            const request = mockRequest();
+            const spy = expect.createSpy();
+            const requester = new Requester( { request } );
+            requester.on( 'link', spy );
+
+            requester.linkManager.add( 'http://www.bbc.co.uk/' )
+                .then( () => requester.start() )
+                .then( () => {
+                    expect( spy ).toHaveBeenCalledWith( {
+                        status: 'added',
+                        url: 'http://www.bbc.co.uk/',
+                    } );
                 } );
 
         } );

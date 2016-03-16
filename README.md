@@ -9,12 +9,18 @@ Very much a work in progress.
 
 ### Issues
 
+* fifo - version that doesn't return promises
+* fifo - database yielder
+* coroutine - cache fn
+* Queue warnings
+* add some logging, particularly of link queuing
 * error handling
 * normalise links in link-manager before using
 * merge queue into promise-util
   * Make it easier to resolve a defer
   * Should coroutine return a reusable function?
 * Do we need to create our own agent?
+* datastore case
 
 ### Features
 

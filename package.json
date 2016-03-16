@@ -17,7 +17,7 @@
     "iconv-lite": "^0.4.13",
     "postcss": "^5.0.17",
     "postcss-value-parser": "^3.3.0",
-    "promise-util": "^2.0.1",
+    "promise-util": "https://github.com/mrdaniellewis/node-promise-utilities.git#v3",
     "request": "^2.67.0",
     "stream-collect": "^1.3.0"
   },
