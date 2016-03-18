@@ -67,144 +67,111 @@ describe( 'parseCssLinks', function() {
 
     } );
 
-    describe( 'finding links', function() {
+    it( 'finds links', function() {
 
-        function testFindingLinks( content ) {
+        const incoming = mockResponse( {
+            statusCode: 200,
+            request: { uri: urlUtils.parse( 'http://www.bbc.co.uk' ) },
+            headers: { 'content-type': 'text/css' },
+            buffer: `a { background: url(foo.png) }`,
+        } );
+
+        const response = new Response( incoming );
+
+        const dataStore = {
+            addReference() {},
+        };
+
+        const spy = expect.spyOn( dataStore, 'addReference' )
+                .andReturn( Promise.resolve() );
+
+        const parser = parseLinks( { dataStore } );        
+
+        return parser( response )
+            .resume()
+            .then( () => {
+                expect( spy ).toHaveBeenCalledWith( [{
+                    url: 'http://www.bbc.co.uk/foo.png',
+                    source: {
+                        url: 'foo.png',
+                        selector: 'a',
+                        property: 'background',
+                        media: '',
+                        line: 1,
+                        column: 5,
+                        type: 'css',
+                        resource: 'http://www.bbc.co.uk/',
+                    },
+                }] );
+
+            } );
+
+    } );
+
+    describe( 'linkManager option', function() {
+
+        it( 'passes links to the supplied linkManager', function() {
 
             const incoming = mockResponse( {
                 statusCode: 200,
-                request: { uri: urlUtils.parse( 'http://www.bbc.co.uk' ) },
+                request: { uri: urlUtils.parse( 'http://www.bbc.co.uk/' ) },
                 headers: { 'content-type': 'text/css' },
-                buffer: content,
+                buffer: 'a { background: url(foo.png) }',
             } );
 
             const response = new Response( incoming );
 
-            const dataStore = {
-                addReference() {},
+            const linkManager = {
+                add() {},
             };
 
-            const spy = expect.spyOn( dataStore, 'addReference' )
+            const spy = expect.spyOn( linkManager, 'add' )
                 .andReturn( Promise.resolve() );
 
-            const parser = parseLinks( { dataStore } );
+            const parser = parseLinks( { linkManager } );
 
             return parser( response )
                 .resume()
-                .then( () => spy );
-        }
-
-        it( 'finds token @import urls in the content', function() {
-
-            return testFindingLinks( '@import foo.css' )
-                .then( spy => {
-                    expect( spy ).toHaveBeenCalledWith( {
-                        url: 'http://www.bbc.co.uk/foo.css',
-                        source: {
-                            rule: '@import',
-                            url: 'http://www.bbc.co.uk/',
-                            type: 'css',
-                        },
-                    } );
+                .then( () => {
+                    expect( spy ).toHaveBeenCalledWith( 'http://www.bbc.co.uk/foo.png' );
                 } );
 
         } );
 
-        it( 'finds string @import urls in the content', function() {
+        describe( 'filter option', function() {
 
-            return testFindingLinks( '@import "foo.css"' )
-                .then( spy => {
-                    expect( spy ).toHaveBeenCalledWith( {
-                        url: 'http://www.bbc.co.uk/foo.css',
-                        source: {
-                            rule: '@import',
-                            url: 'http://www.bbc.co.uk/',
-                            type: 'css',
-                        },
-                    } );
+            it( 'filters out links using a custom function', function() {
+
+                const incoming = mockResponse( {
+                    statusCode: 200,
+                    request: { uri: urlUtils.parse( 'http://www.bbc.co.uk/' ) },
+                    headers: { 'content-type': 'text/css' },
+                    buffer: 'a { background: url(foo.png) } img { background: url(bar.png) }',
                 } );
 
-        } );
+                const response = new Response( incoming );
 
-        it( 'finds string @import urls in the content', function() {
+                const filter = reference => {
+                    return reference.source.selector === 'img';
+                };
 
-            return testFindingLinks( '@import "foo.css"' )
-                .then( spy => {
-                    expect( spy ).toHaveBeenCalledWith( {
-                        url: 'http://www.bbc.co.uk/foo.css',
-                        source: {
-                            rule: '@import',
-                            url: 'http://www.bbc.co.uk/',
-                            type: 'css',
-                        },
-                    } );
-                } );
+                const linkManager = {
+                    add() {},
+                };
 
-        } );
+                const spy = expect.spyOn( linkManager, 'add' )
+                    .andReturn( Promise.resolve() );
 
-        it( 'finds url @import links in the content', function() {
+                const parser = parseLinks( { linkManager, filter } );
 
-            return testFindingLinks( '@import url(foo.css)' )
-                .then( spy => {
-                    expect( spy ).toHaveBeenCalledWith( {
-                        url: 'http://www.bbc.co.uk/foo.css',
-                        source: {
-                            rule: '@import',
-                            url: 'http://www.bbc.co.uk/',
-                            type: 'css',
-                        },
-                    } );
-                } );
-
-        } );
-
-        it( 'finds @import links with media queries in the content', function() {
-
-            return testFindingLinks( '@import url(foo.css)' )
-                .then( spy => {
-                    expect( spy ).toHaveBeenCalledWith( {
-                        url: 'http://www.bbc.co.uk/foo.css',
-                        source: {
-                            rule: '@import',
-                            url: 'http://www.bbc.co.uk/',
-                            type: 'css',
-                        },
-                    } );
-                } );
-
-        } );
-
-        it( 'finds links in property declarations', function() {
-
-            const css = `a { 
-                background-image: 
-                    url(https://mdn.mozillademos.org/files/11305/firefox.png), 
-                    url(https://mdn.mozillademos.org/files/11307/bubbles.png), 
-                    linear-gradient(to right, rgba(30, 75, 115, 1), 
-                    rgba(255, 255, 255, 0)); 
-            }`;
-
-            return testFindingLinks( css )
-                .then( spy => {
-                    
-                    expect( spy.calls.length ).toEqual( 2 );
-
-                    expect( spy ).toHaveBeenCalledWith( {
-                        url: 'https://mdn.mozillademos.org/files/11305/firefox.png',
-                        source: {
-                            url: 'http://www.bbc.co.uk/',
-                            type: 'css',
-                        },
+                return parser( response )
+                    .resume()
+                    .then( () => {
+                        expect( spy.calls.length ).toEqual( 1 );
+                        expect( spy ).toHaveBeenCalledWith( 'http://www.bbc.co.uk/bar.png' );
                     } );
 
-                    expect( spy ).toHaveBeenCalledWith( {
-                        url: 'https://mdn.mozillademos.org/files/11307/bubbles.png',
-                        source: {
-                            url: 'http://www.bbc.co.uk/',
-                            type: 'css',
-                        },
-                    } );
-                } );
+            } );
 
         } );
 

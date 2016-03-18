@@ -103,7 +103,7 @@ describe( 'redirect', function() {
             url: 'http://www.bbc.co.uk/',
             source: {
                 type: 'http',
-                url: 'http://www.bbc.co.uk/',
+                resource: 'http://www.bbc.co.uk/',
                 statusCode: 301,
                 header: 'location',
                 value: 'http://www.bbc.co.uk/',
@@ -146,7 +146,7 @@ describe( 'redirect', function() {
             url: 'http://www.bbc.co.uk/test',
             source: {
                 type: 'http',
-                url: 'http://www.bbc.co.uk/',
+                resource: 'http://www.bbc.co.uk/',
                 value: '/test',
                 header: 'location',
                 statusCode: 301,

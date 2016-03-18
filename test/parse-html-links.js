@@ -67,200 +67,46 @@ describe( 'parseHtmlLinks', function() {
 
     } );
 
-    describe( 'finding links', function() {
+    it( 'finds links', function() {
 
-        function testFindingLinks( content, expected ) {
+        const incoming = mockResponse( {
+            statusCode: 200,
+            request: { uri: urlUtils.parse( 'http://www.bbc.co.uk' ) },
+            headers: { 'content-type': 'text/html' },
+            buffer: '<a href="http://www.bbc.co.uk/" class="test">text</a>',
+        } );
 
-            const incoming = mockResponse( {
-                statusCode: 200,
-                request: { uri: urlUtils.parse( 'http://www.bbc.co.uk' ) },
-                headers: { 'content-type': 'text/html' },
-                buffer: content,
-            } );
+        const response = new Response( incoming );
 
-            const response = new Response( incoming );
+        const dataStore = {
+            addReference() {},
+        };
 
-            const dataStore = {
-                addReference() {},
-            };
-
-            const spy = expect.spyOn( dataStore, 'addReference' )
+        const spy = expect.spyOn( dataStore, 'addReference' )
                 .andReturn( Promise.resolve() );
 
-            const parser = parseLinks( { dataStore } );
+        const parser = parseLinks( { dataStore } );        
 
-            return parser( response )
-                .resume()
-                .then( () => {
-                    expect( spy ).toHaveBeenCalledWith( expected );
-                } );
-        }
-
-        it( 'finds <a> links in the content', function() {
-
-            return testFindingLinks( 
-                '<a href="http://www.bbc.co.uk/" class="test">text</a>',
-                {
+        return parser( response )
+            .resume()
+            .then( () => {
+                
+                expect( spy ).toHaveBeenCalledWith( [{
                     url: 'http://www.bbc.co.uk/',
                     source: {
+                        url: 'http://www.bbc.co.uk/',
                         nodeName: 'a',
-                        attributes: { href: 'http://www.bbc.co.uk/', class: 'test' },
-                        base: undefined,
-                        url: 'http://www.bbc.co.uk/',
+                        attr: 'href',
+                        attributes: { class: 'test', href: 'http://www.bbc.co.uk/' },
+                        line: 1,
+                        column: 1,
                         type: 'html',
-                    },
-                }
-            );
-
-        } );
-
-        it( 'finds <area> links in the content', function() {
-
-            return testFindingLinks( 
-                '<area href="http://www.bbc.co.uk/" class="test" />',
-                {
-                    url: 'http://www.bbc.co.uk/',
-                    source: {
-                        nodeName: 'area',
-                        attributes: { href: 'http://www.bbc.co.uk/', class: 'test' },
                         base: undefined,
-                        url: 'http://www.bbc.co.uk/',
-                        type: 'html',
+                        resource: 'http://www.bbc.co.uk/',
                     },
-                }
-            );
-
-        } );
-
-        it( 'finds <img> links in the content', function() {
-
-            return testFindingLinks( 
-                '<img src="http://www.bbc.co.uk/" />',
-                {
-                    url: 'http://www.bbc.co.uk/',
-                    source: {
-                        nodeName: 'img',
-                        attributes: { src: 'http://www.bbc.co.uk/' },
-                        base: undefined,
-                        url: 'http://www.bbc.co.uk/',
-                        type: 'html',
-                    },
-                }
-            );
-
-        } );
-
-        it( 'finds <link> links in the content', function() {
-
-            return testFindingLinks( 
-                '<link href="http://www.bbc.co.uk/" />',
-                {
-                    url: 'http://www.bbc.co.uk/',
-                    source: {
-                        nodeName: 'link',
-                        attributes: { href: 'http://www.bbc.co.uk/' },
-                        base: undefined,
-                        url: 'http://www.bbc.co.uk/',
-                        type: 'html',
-                    },
-                }
-            );
-
-        } );
-
-        it( 'finds <script> links in the content', function() {
-
-            testFindingLinks( 
-                '<script src="http://www.bbc.co.uk/" /><script>',
-                {
-                    url: 'http://www.bbc.co.uk/',
-                    source: {
-                        nodeName: 'script',
-                        attributes: { src: 'http://www.bbc.co.uk/' },
-                        base: undefined,
-                        url: 'http://www.bbc.co.uk/',
-                        type: 'html',
-                    },
-                }
-            );
-
-        } );
-
-        it( 'finds <iframe> links in the content', function() {
-
-            return testFindingLinks( 
-                '<iframe src="http://www.bbc.co.uk/" /><iframe>',
-                {
-                    url: 'http://www.bbc.co.uk/',
-                    source: {
-                        nodeName: 'iframe',
-                        attributes: { src: 'http://www.bbc.co.uk/' },
-                        base: undefined,
-                        url: 'http://www.bbc.co.uk/',
-                        type: 'html',
-                    },
-                }
-            );
-
-        } );
-
-        it( 'finds <form> links in the content', function() {
-
-            return testFindingLinks( 
-                '<form action="http://www.bbc.co.uk/" /><form>',
-                {
-                    url: 'http://www.bbc.co.uk/',
-                    source: {
-                        nodeName: 'form',
-                        attributes: { action: 'http://www.bbc.co.uk/' },
-                        base: undefined,
-                        url: 'http://www.bbc.co.uk/',
-                        type: 'html',
-                    },
-                }
-            );
-
-        } );
-
-        describe( 'link resolving', function() {
-
-            it( 'resolves link using the request url', function() {
-
-                return testFindingLinks( 
-                    '<a href="/test">text</a>',
-                    {
-                        url: 'http://www.bbc.co.uk/test',
-                        source: {
-                            nodeName: 'a',
-                            attributes: { href: '/test' },
-                            base: undefined,
-                            url: 'http://www.bbc.co.uk/',
-                            type: 'html',
-                        },
-                    }
-                );
+                }] );
 
             } );
-
-            it( 'resolves link using the first found <base>', function() {
-
-                return testFindingLinks( 
-                    '<a href="/test">text</a><base href="http://wikipedia.org/"><base href="http://foobar.org/">',
-                    {
-                        url: 'http://wikipedia.org/test',
-                        source: {
-                            nodeName: 'a',
-                            attributes: { href: '/test' },
-                            base: 'http://wikipedia.org/',
-                            url: 'http://www.bbc.co.uk/',
-                            type: 'html',
-                        },
-                    }
-                );
-
-            } );
-
-        } );
 
     } );
 
